@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<style>
+*
+{
+  font-family: arial;
+}
+div.UIWidget
+{
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 120px;
+  height: 80px;
+
+  background-color: #eee;
+  padding: 0px;
+  color: gray;
+  border-radius: 2px;
+  border: 2px solid lightgray;
+}
+div#canvas
+{
+  margin: 100px;
+  background-color: gray;
+  display: inline-block;
+}
+span.button
+{
+  background-color: dodgerblue;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: white;
+}
+</style>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script>
+
+function random_int(min, max) { return Math.floor((Math.random() * max) + min); }
+function random_float(min, max) { return Math.random() * max + min; }
+
+var last_widget_id = 0;
+
+function add_randomly_placed_widget()
+{
+  last_widget_id++;
+  var widget_id = "widget" + last_widget_id;
+
+  $("#canvas").append("<div class=\"UIWidget\" id=\"" + widget_id + "\">");
+
+  var rotation = random_int(0, 360) + "deg";
+  var scale = random_float(0.8, 1.2);
+
+  $("#" + widget_id)
+    .css("top", random_int(100, 400) + "px")
+    .css("left", random_int(100, 800) + "px")
+    .css("transform", "translateX(-50%) translateY(-30%) rotate(" + rotation + ") scaleX(" + scale + ") scaleY(" + scale + ")");
+}
+
+function getRotationDegrees(obj) {
+    var matrix = obj.css("transform");
+    if(matrix !== 'none') {
+        var values = matrix.split('(')[1].split(')')[0].split(',');
+        var a = values[0];
+        var b = values[1];
+        var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+    } else { var angle = 0; }
+    return angle;
+}
+
+function output_canvas()
+{
+  var widgets = new Array();
+  $("#canvas").children("*").each(function(){
+    var this_obj = $(this);
+    var obj = {
+      "name": this_obj.attr("id"),
+      "position.x": parseInt(this_obj.css("top")),
+      "position.y": parseInt(this_obj.css("left")),
+      "align.x": -parseInt(this_obj.css('transform').split(',')[5])/100,
+      "align.y": -parseInt(this_obj.css('transform').split(',')[4])/100,
+      "scale.x": parseFloat(this_obj.css('transform').split(',')[1]),
+      "scale.y": parseFloat(this_obj.css('transform').split(',')[2]),
+      "rotation": getRotationDegrees(this_obj)
+    };
+    widgets.push(JSON.stringify(obj));
+  });
+  var result = '{"widgets":[' + widgets + ']}';
+  return result;
+}
+
+$(document).ready(function(){
+  $("#randomize_button").click(function(){
+    add_randomly_placed_widget();
+  });
+
+  $("#output_button").click(function(){
+    var canv = output_canvas();
+    alert(canv);
+  });
+});
+</script>
+</head>
+
+<body>
+<div class="controls">
+  <span class="button" id="randomize_button">Add Random Element</span>
+  <span class="button" id="output_button">Output Canvas</span>
+  <div class="info"></div>
+</div>
+<div id="canvas"></div>
+</body>
+
+</html>
