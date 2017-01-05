@@ -79,6 +79,8 @@ function output_canvas()
       "name": this_obj.attr("id"),
       "position.x": parseInt(this_obj.css("top")),
       "position.y": parseInt(this_obj.css("left")),
+      "size.x": parseInt(this_obj.css("width")),
+      "size.y": parseInt(this_obj.css("height")),
       "align.x": -parseInt(this_obj.css('transform').split(',')[5])/100,
       "align.y": -parseInt(this_obj.css('transform').split(',')[4])/100,
       "scale.x": parseFloat(this_obj.css('transform').split(',')[1]),
